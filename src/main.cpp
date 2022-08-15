@@ -1,4 +1,5 @@
 #include "Hooks.h"
+#include "widgetmenu.h"
 
 using namespace Hooks;
 
@@ -7,7 +8,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_message)
 	switch (a_message->type) {
 	case SKSE::MessagingInterface::kPostLoad:
 		break;
-	case SKSE::MessagingInterface::kDataLoaded:		
+	case SKSE::MessagingInterface::kDataLoaded:
+		WidgetMenu::Register();
 		break;
 	case SKSE::MessagingInterface::kNewGame:
 	default:
