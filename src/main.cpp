@@ -78,7 +78,6 @@ extern "C" DLLEXPORT bool SKSEAPI SKSEPlugin_Load(const SKSE::LoadInterface* a_s
 	messaging->RegisterListener(MessageHandler);
 
 	StackDumpHook::Install();
-	SecondaryVMOverstressHook::Install();
 	VMProcessUpdatesHook::Install();
 	return true;
 }
