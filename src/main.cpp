@@ -7,6 +7,7 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_message)
 {
 	switch (a_message->type) {
 	case SKSE::MessagingInterface::kPostLoad:
+		WidgetMenu::Show();
 		break;
 	case SKSE::MessagingInterface::kDataLoaded:
 		WidgetMenu::Register();
