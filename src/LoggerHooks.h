@@ -12,18 +12,8 @@ namespace LoggerHooks
 	using VM = RE::BSScript::Internal::VirtualMachine;
 	using StackID = RE::VMStackID;
 
-	// Putting this here avoids a compile error when used in PCH
-	template <class T>
-	static void write_thunk_call(std::uintptr_t a_src)
-	{
-		auto& trampoline = SKSE::GetTrampoline();
-		SKSE::AllocTrampoline(14);
-
-		T::func = trampoline.write_call<5>(a_src, T::thunk);
-	}
-
-	// TODO: Test new none check!
-	struct ValidationSignaturesHook
+	// TODO: Test new none check and fix for CLIB-NG!
+	/* struct ValidationSignaturesHook
 	{
 		// reimplementation of ValidateSignatureAndFixupNones, but with better logging
 		static bool thunk(RE::BSScript::IFunction** a_function, RE::BSScrapArray<RE::BSScript::Variable>* a_varArray, char* a_outString, std::int32_t a_bufferSize)
@@ -106,7 +96,7 @@ namespace LoggerHooks
 			logger::info("ValidationSignaturesHook hooked at address {}", fmt::format("{:x}", target.address()));
 			logger::info("ValidationSignaturesHook at offset {}", fmt::format("{:x}", target.offset()));
 		}
-	};
+	}; */
 
 	// TODO: Make this optional
 	struct GetFormFromFileHook
@@ -114,9 +104,9 @@ namespace LoggerHooks
 		// Install our hook at the specified address
 		static inline void Install()
 		{
-			REL::Relocation<std::uintptr_t> target{ REL_ID(54832, 00000), OFFSET_3(0x7E, 0x0, 0x0) };   // TODO: AE and VR
+			REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(54832, 55465), REL::VariantOffset(0x7E, 0x7E, 0x81) };
 			REL::safe_fill(target.address(), REL::NOP, 0x5);                                            // Remove the call to setup the log
-			REL::Relocation<std::uintptr_t> target2{ REL_ID(54832, 00000), OFFSET_3(0x97, 0x0, 0x0) };  // TODO: AE and VR
+			REL::Relocation<std::uintptr_t> target2{ RELOCATION_ID(54832, 55465), REL::VariantOffset(0x97, 0x97, 0x9A) };
 			REL::safe_fill(target2.address(), REL::NOP, 0x4);                                           // Remove the call to log the GetFormFromFile error
 			logger::info("GetFormFromFileHook hooked at address {}", fmt::format("{:x}", target.address()));
 			logger::info("GetFormFromFileHook at offset {}", fmt::format("{:x}", target.offset()));
@@ -165,8 +155,8 @@ namespace LoggerHooks
 		// Install our hook at the specified address
 		static inline void Install()
 		{
-			REL::Relocation<std::uintptr_t> target{ REL_ID(52730, 00000), OFFSET_3(0x3B2, 0x0, 0x0) };  // TODO: AE and VR
-			write_thunk_call<BaseTypeMismatch>(target.address());
+			REL::Relocation<std::uintptr_t> target{ RELOCATION_ID(52730, 53574), REL::VariantOffset(0x3B2, 0x52C, 0x3B2) };
+			stl::write_thunk_call<BaseTypeMismatch>(target.address());
 
 			logger::info("BaseTypeMismatch hooked at address {}", fmt::format("{:x}", target.address()));
 			logger::info("BaseTypeMismatch at offset {}", fmt::format("{:x}", target.offset()));
@@ -175,7 +165,7 @@ namespace LoggerHooks
 
 	static inline void InstallHooks()
 	{
-		ValidationSignaturesHook::Install();
+		//ValidationSignaturesHook::Install();
 		GetFormFromFileHook::Install();
 		BaseTypeMismatch::Install();
 	}
